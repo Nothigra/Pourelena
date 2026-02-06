@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine 💘</title>
+
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background: #ffe6eb;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: clamp(1.6rem, 6vw, 2.5rem);
+            color: #d6336c;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            color: #6c757d;
+            margin-bottom: 15px;
+            max-width: 90%;
+        }
+
+        .tiny {
+            font-size: 0.7rem;
+            opacity: 0.6;
+            margin-top: 8px;
+        }
+
+        img {
+            width: min(80vw, 300px);
+            margin-bottom: 20px;
+            border-radius: 12px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            padding: 15px 25px;
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 160px;
+        }
+
+        #yes { background: #ff4d6d; color: white; }
+        #no { background: #adb5bd; color: white; }
+        #retry { background: #845ef7; color: white; }
+        #continue { background: #ff8787; color: white; }
+        #choice1 { background: #ff6b6b; color: white; }
+        #choice2 { background: #ffa8a8; color: white; }
+        #restart {
+            background: none;
+            color: #d6336c;
+            font-size: 0.8rem;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<h1 id="question">Veux-tu être ma Valentine ? 💘</h1>
+<p id="message"></p>
+<p id="tinyText" class="tiny" style="display:none">(En vrai j’ai juste pas d’argent)</p>
+
+<img id="gif" style="display:none">
+
+<div class="buttons" id="buttons">
+    <button id="yes">Oui 💖</button>
+    <button id="no">Non 😅</button>
+</div>
+
+<script>
+const question = document.getElementById("question");
+const message = document.getElementById("message");
+const tinyText = document.getElementById("tinyText");
+const yesBtn = document.getElementById("yes");
+const noBtn = document.getElementById("no");
+const gif = document.getElementById("gif");
+const buttons = document.getElementById("buttons");
+
+let stage = 1;
+let scaleYes = 1;
+let noClicks = 0;
+
+const excuses = [
+    "Heu… tu t'es trompée je crois 😅",
+    "C'est pas grave, réessaie 💕",
+    "Oups, mauvais bouton 👀",
+    "Je fais comme si j'avais rien vu 😌",
+    "Allez… dis oui 😭"
+];
+
+noBtn.addEventListener("click", () => {
+    // ÉTAPE 1 : Valentine
+    if (stage === 1) {
+        message.textContent = excuses[noClicks % excuses.length];
+        noClicks++;
+
+        scaleYes += 0.35;
+        yesBtn.style.transform = `scale(${scaleYes})`;
+
+        if (scaleYes > 4) {
+            yesBtn.style.position = "fixed";
+            yesBtn.style.top = "0";
+            yesBtn.style.left = "0";
+            yesBtn.style.width = "100vw";
+            yesBtn.style.height = "100vh";
+            yesBtn.style.fontSize = "clamp(2rem, 10vw, 4rem)";
+            yesBtn.style.borderRadius = "0";
+            yesBtn.style.zIndex = "10";
+        }
+    }
+
+    // ÉTAPE 2 : Mariage → OUI grossit
+    if (stage === 2) {
+        scaleYes += 0.25;
+        yesBtn.style.transform = `scale(${scaleYes})`;
+
+        gif.src = "https://media.giphy.com/media/ROF8OQvDmxytW/giphy.gif";
+        gif.style.display = "block";
+    }
+});
+
+yesBtn.addEventListener("click", () => {
+    // Passage à la question mariage
+    if (stage === 1) {
+        stage = 2;
+        question.textContent = "Veux-tu m'épouser ? 💍";
+        message.textContent = "";
+        yesBtn.textContent = "Oui 😳";
+        noBtn.textContent = "Non 😢";
+        yesBtn.style = "";
+        scaleYes = 1;
+
+        gif.src = "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif";
+        gif.style.display = "block";
+    }
+
+    // Acceptation mariage
+    else if (stage === 2) {
+        stage = 3;
+        question.textContent = "Zut… le site ne fonctionne plus 😔";
+        message.textContent =
+            "Pour le faire fonctionner, il faut faire un massage de 20 minutes à votre amoureux 💆‍♂️💖";
+        tinyText.style.display = "block";
+        gif.style.display = "none";
+
+        buttons.innerHTML = `<button id="retry">Réessayer plus tard</button>`;
+
+        document.getElementById("retry").onclick = () => {
+            stage = 4;
+            question.textContent = "Dilemme d’amour ❤️‍🔥";
+            message.innerHTML = `
+                Est-ce que tu préfères :<br><br>
+                Être aimé(e) toute ta vie sans jamais aimer,<br>
+                <strong>OU</strong><br>
+                aimer profondément une seule fois et tout perdre ensuite ?
+            `;
+            tinyText.style.display = "none";
+            buttons.innerHTML = `
+                <button id="choice1">Être aimé toute ma vie</button>
+                <button id="choice2">Aimer profondément une seule fois</button>
+            `;
+
+            document.getElementById("choice1").onclick =
+            document.getElementById("choice2").onclick = () => {
+                question.textContent = "❤️";
+                message.textContent = "En vrai m’en fiche de la question, je t’aime juste.";
+                buttons.innerHTML = `
+                    <button id="restart">Recommencer tout</button>
+                    <p class="tiny">(Stp recommence j’ai passé trop de temps hahaha)</p>
+                `;
+
+                document.getElementById("restart").onclick = () => {
+                    location.reload();
+                };
+            };
+        };
+    }
+});
+</script>
+
+</body>
+</html>
